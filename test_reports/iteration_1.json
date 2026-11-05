@@ -1,0 +1,75 @@
+{
+  "iteration": 1,
+  "mode": "generate",
+  "summary": "All 8 acceptance criteria exercised via 9 browser checks (1 criterion double-covered via public preview URL as required). No backend test files added: the app is explicitly 100% client-side (localStorage only); the only backend endpoint is the unchanged template /api/status, which is not part of any acceptance criterion.",
+  "passed": 9,
+  "failed": 0,
+  "bugs": [],
+  "action_items": [],
+  "retest_needed": false,
+  "checks": [
+    {
+      "criterion": "Start screen and play",
+      "name": "start-screen-and-play",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "start-game-button visible on load; after click main-arrow-box and timer-progress-bar visible"
+    },
+    {
+      "criterion": "Start screen and play (public ingress)",
+      "name": "start-screen-and-play-preview-url",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Same flow verified against https://reverse-arcade--5ub4f7q2.preview.emergentagent.com"
+    },
+    {
+      "criterion": "Normal arrow rule",
+      "name": "normal-arrow-correct-move-scores",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Read data-dir/data-reversed=false from main-arrow-box, dragged >30px in that direction, current-score-display became '1'"
+    },
+    {
+      "criterion": "Reverse (red) arrow rule",
+      "name": "reverse-arrow-opposite-move-scores",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Looped correct moves until data-reversed=true appeared, swiped opposite direction, score incremented by 1"
+    },
+    {
+      "criterion": "Wrong move ends the game",
+      "name": "wrong-direction-ends-game",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "game-over-modal visible with text 'Wrong direction', final-score-value and game-over-best-score present"
+    },
+    {
+      "criterion": "Timeout ends the game",
+      "name": "timeout-ends-game",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "No move made at score 0; game-over-modal appeared within 4s containing 'Time'"
+    },
+    {
+      "criterion": "Two preview arrows",
+      "name": "preview-arrows-shift-after-move",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "preview-arrow-1/2 (.last() to skip 200ms-stale exiting duplicates) visible and smaller than main-arrow-box; after correct move main-arrow-box data-dir equals old preview-arrow-1 data-dir"
+    },
+    {
+      "criterion": "Best score and restart",
+      "name": "best-score-persists-and-play-again",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Cleared ra_best_score, scored 1 then ended game -> new-record-indicator shown, final-score-value=1; play-again-button reset score to 0; localStorage ra_best_score='1' persisted after page.reload()"
+    },
+    {
+      "criterion": "Sound toggle and help",
+      "name": "sound-toggle-and-help-dialog",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "sound-toggle-button aria-label changed on click, ra_sound_enabled stored; how-to-play-button opened rule-dialog-content"
+    }
+  ]
+}
