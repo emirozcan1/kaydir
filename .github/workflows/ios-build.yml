@@ -1,1 +1,66 @@
 
+name: Build Reverse Arcade for iOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-26
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Build web application
+        working-directory: frontend
+        run: npm run build
+
+      - name: Add iOS platform
+        working-directory: frontend
+        run: |
+          if [ ! -d ios ]; then
+            npx cap add ios
+          fi
+
+      - name: Sync Capacitor
+        working-directory: frontend
+        run: npx cap sync ios
+
+      - name: Build iOS application
+        working-directory: frontend
+        run: |
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p "$RUNNER_TEMP/Payload"
+          cp -R "$RUNNER_TEMP/DerivedData/Build/Products/Release-iphoneos/App.app" \
+            "$RUNNER_TEMP/Payload/App.app"
+          cd "$RUNNER_TEMP"
+          zip -r ReverseArcade-unsigned.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Reverse-Arcade-iOS
+          path: ${{ runner.temp }}/ReverseArcade-unsigned.ipa
+          retention-days: 7
+
